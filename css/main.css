@@ -92,3 +92,8 @@ button:hover {
     background-color: #ec311c;
     color: #fff;
 }
+
+.timer {
+    color: #00000080;
+    font-size: 19px;
+}

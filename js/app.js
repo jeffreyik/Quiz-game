@@ -11,6 +11,9 @@ let pointEl = document.querySelector(".point-el div");
 let playAgainBtn = document.querySelector(".play-again-btn");
 let correctAnswerEl = document.querySelector(".correct-answer");
 
+// Timer Element
+let timerEl = document.querySelector(".timer");
+
 // Track current question
 let currentQuestionNumber = 1;
 let questionIndex = 0;
@@ -26,7 +29,7 @@ function getRandomComplement() {
     return complements[randomIndex];
 }
 
-console.log(getRandomComplement())
+// console.log(getRandomComplement())
 
 function updateQuestionNumber() {
     questionPageEl.textContent = `Question ${currentQuestionNumber} / ${listOfQuestions.length}`;
@@ -46,7 +49,8 @@ function startGame() {
     pointEl.style.display = "none"
     playAgainBtn.style.display = "none";
     updateQuestionNumber();
-    renderQuestionsToUI();    
+    renderQuestionsToUI();
+    startTimer();
 }
 
 
@@ -79,10 +83,29 @@ optionEl.forEach(option => {
     })
 });
 
+let seconds = 0;
+
+let timer;
+
+function startTimer() {
+    seconds = listOfQuestions.length * (10 /2);
+    timer = setInterval(() => {
+        // console.log(seconds += 1);
+        if (seconds <= 0) {
+            clearInterval(timer);
+            timeUp();
+        } else {
+            seconds -= 1;
+            timerEl.textContent = `${seconds}`;
+        }
+        
+    }, 1000)
+}
+
 let nextBtn = document.querySelector('.next-question');
 nextBtn.addEventListener('click', moveToNextQuestion);
     
-function moveToNextQuestion(option) {
+function moveToNextQuestion(option = {}) {
     if (currentQuestionNumber < listOfQuestions.length) {
         currentQuestionNumber += 1;
         questionIndex += 1;
@@ -90,18 +113,31 @@ function moveToNextQuestion(option) {
         renderQuestionsToUI();
         updateQuestionNumber();
     } else if (currentQuestionNumber === listOfQuestions.length) {
-        pointEl.innerHTML = `Wohoo! Nice Game <br> you got ${quizPoint}/${5 * listOfQuestions.length}`;
-        pointEl.style.display = "block"
-        playAgainBtn.style.display = "block";
-        questionContainer.style.display = "none"
-        nextBtn.style.display = "none";
+        finishedGame();
     }
     else {
         return;
     }
     option.id = "";
-    correctAnswerEl.textContent = "";
-        
+    correctAnswerEl.textContent = "";       
+}
+
+function timeUp() {
+    pointEl.innerHTML = `Oops! Time's Up :( <br> you got ${quizPoint}/${5 * listOfQuestions.length}`;
+    pointEl.style.display = "block"
+    playAgainBtn.style.display = "block";
+    questionContainer.style.display = "none"
+    nextBtn.style.display = "none";
+}
+
+function finishedGame() {
+    pointEl.innerHTML = `Wohoo! Nice Game <br> you got ${quizPoint}/${5 * listOfQuestions.length}`;
+    pointEl.style.display = "block"
+    playAgainBtn.style.display = "block";
+    questionContainer.style.display = "none"
+    nextBtn.style.display = "none";
+    timerEl.textContent = `0`;
+    clearInterval(timer);
 }
 
 function checkIfCorrect(selectedAnswer, correctAnswer, option) {
